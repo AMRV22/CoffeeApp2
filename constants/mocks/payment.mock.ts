@@ -4,12 +4,12 @@ const paymentTypeCollection: readonly IPaymentType[] = Object.freeze([
     {
         id: 1,
         name: "Efectivo",
-        discount: 15,
+        discount: 0.15,
     },
     {
         id: 2,
         name: "Tarjeta de crédito",
-        discount: 5,
+        discount: 0.05,
     },
 ]);
 

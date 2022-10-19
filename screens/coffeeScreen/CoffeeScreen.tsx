@@ -5,84 +5,132 @@ import {
   Select,
   SelectItem,
   Input,
-  Button
+  Button,
 } from "@ui-kitten/components";
 import { ChangeEvent, useState } from "react";
 import ResumeOrder from "../../components/resumeOrder";
 import coffeeSizeCollection from "../../constants/mocks/coffeeSize.mock";
 import coffeeTypeCollection from "../../constants/mocks/coffeeType.mock";
 import paymentTypeCollection from "../../constants/mocks/payment.mock";
-import {useForm, Controller} from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
+import {FormValues} from "../../utils/types/types";
 
 type Nullable<T> = T | null;
 
-// class CoffeeOrder {
-//   quantity: Nullable<number> = 0;
-//   size: Nullable<string> = "";
-//   type: Nullable<string> = "";
-//   payment: Nullable<string> = "";
-//   discount: Nullable<string> = "";
-//   [key: string]: string | Nullable<number>;
-// }
 
 const CoffeeScreen = () => {
-  const { register, setValue, handleSubmit, control, reset, formState: { errors } } = useForm();
+  const {
+    register,
+    setValue,
+    handleSubmit,
+    control,
+    reset,
+    formState: { errors },
+  } = useForm();
 
-  const onSubmit = (data: any) => {
+  const [formData, setFormData] = useState<FormValues>();
+
+  const onSubmit = (data: FormValues) => {
     console.log(data);
+    setFormData(data);
   };
-   
+
   return (
     <View>
       <View style={[styles.selectionContainer]}>
         <Text style={styles.title}>Coffee App</Text>
         <Layout style={styles.selectContainer} level="1">
-          <Controller 
+          <Controller
             control={control}
             name="size"
-            render={({field: {onChange, value}}) => (
+            render={({ field: { onChange, value } }) => (
               <Select
-              value={value}
-              onSelect={(index) => {
-                const parsedIndex = index as IndexPath;
-                onChange(coffeeSizeCollection[parsedIndex.row])
-              }}
-              placeholder="Seleccione tamaño de café"
-            >
-              {coffeeSizeCollection.map((item, index) => (
-                <SelectItem key={index} title={item.name} />
-              ))}
-            </Select>
+                value={
+                  coffeeSizeCollection.find(
+                    (target) => target.id == Number(value)
+                  )?.name
+                }
+                onSelect={(index) => {
+                  const parsedIndex = index as IndexPath;
+                  onChange(coffeeSizeCollection[parsedIndex.row].id);
+                }}
+                placeholder="Seleccione tamaño de café"
+              >
+                {coffeeSizeCollection.map((item, index) => (
+                  <SelectItem key={index} title={item.name} />
+                ))}
+              </Select>
+            )}
+          />
+        </Layout>
+        <Layout style={styles.selectContainer} level="1">
+          <Controller
+            control={control}
+            name="type"
+            render={({ field: { onChange, value } }) => (
+              <Select
+                value={
+                  coffeeTypeCollection.find(
+                    (target) => target.id == Number(value)
+                  )?.name
+                }
+                onSelect={(index) => {
+                  const parsedIndex = index as IndexPath;
+                  onChange(coffeeTypeCollection[parsedIndex.row].id);
+                }}
+                placeholder="Seleccione tipo de café"
+              >
+                {coffeeTypeCollection.map((item, index) => (
+                  <SelectItem key={index} title={item.name} />
+                ))}
+              </Select>
+            )}
+          />
+        </Layout>
+        <Layout style={styles.selectContainerRow} level="1">
+          <Controller
+            control={control}
+            name="payment"
+            render={({ field: { onChange, value } }) => (
+              <Select
+                value={
+                  paymentTypeCollection.find(
+                    (target) => target.id == Number(value)
+                  )?.name
+                }
+                onSelect={(index) => {
+                  const parsedIndex = index as IndexPath;
+                  onChange(paymentTypeCollection[parsedIndex.row].id);
+                }}
+                style={styles.customInputSpace}
+                placeholder="Tipo de pago"
+              >
+                {paymentTypeCollection.map((item, index) => (
+                  <SelectItem key={index} title={item.name} />
+                ))}
+              </Select>
             )}
           />
 
-        </Layout>
-        <Layout style={styles.selectContainer} level="1">
-          <Select placeholder="Seleccione tipo de café">
-            {coffeeTypeCollection.map((item, index) => (
-              <SelectItem key={index} title={item.name} />
-            ))}
-          </Select>
-        </Layout>
-        <Layout style={styles.selectContainerRow} level="1">
-          <Select style={styles.customInputSpace} placeholder="Tipo de pago">
-            {paymentTypeCollection.map((item, index) => (
-              <SelectItem key={index} title={item.name} />
-            ))}
-          </Select>
           <Controller
             control={control}
-            render={({field: {onChange, onBlur, value}}) =>(
-                <Input  onBlur={onBlur} onChangeText={value => onChange(value)} value={value} style={styles.customInputSpace} placeholder="0" />
+            render={({ field: { onChange, value } }) => (
+              <Input
+                onChangeText={(value) => onChange(value)}
+                value={value}
+                style={styles.customInputSpace}
+                placeholder="0"
+              />
             )}
             name="quantity"
-           />          
-          
+          />
         </Layout>
       </View>
-      <ResumeOrder />
+      <ResumeOrder {...formData} />
       <Layout style={styles.buttonContainer} level="1">
-        <Button onPress={handleSubmit(onSubmit)} status="info">Calcular</Button>
+        <Button onPress={handleSubmit(onSubmit)} status="info">
+          Calcular
+        </Button>
       </Layout>
     </View>
   );
@@ -113,13 +161,13 @@ const styles = StyleSheet.create({
     flex: 1,
     margin: 4,
   },
-  buttonContainer:{
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex:1,
-    padding:14,
-    marginTop:24
-  }
+  buttonContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+    padding: 14,
+    marginTop: 24,
+  },
 });
 
 export default CoffeeScreen;
