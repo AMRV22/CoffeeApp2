@@ -1,6 +1,6 @@
-import ICoffeeType from '../../utils/interfaces/iCoffeeType';
+import IBaseInterface from '../../utils/interfaces/IBaseInterfase';
 
-const coffeeTypeCollection: readonly ICoffeeType[] = Object.freeze([
+const coffeeTypeCollection: readonly IBaseInterface[] = Object.freeze([
     {
         id: 1,
         name: "Mocha",

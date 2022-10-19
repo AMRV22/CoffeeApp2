@@ -7,55 +7,53 @@ import paymentTypeCollection from "../../constants/mocks/payment.mock";
 import { FormValues } from "../../utils/types/types";
 import getTotal from "../../utils/functions/getTotal";
 
-const ResumeComponent = (formData: FormValues) => {
+type ComponentProps = {
+  formValues : FormValues
+};
+
+const ResumeComponent = ({formValues}: ComponentProps) => {
   return (
     <View style={[styles.selectionContainer]}>
       <Text style={styles.title}>Resumen :</Text>
       <Layout style={styles.selectContainerRow} level="1">
         <Text style={styles.subtitle}>Cantidad solicitada:</Text>
-        <Text style={styles.subtitle}>
-          {formData.quantity && formData.quantity}
-        </Text>
+        <Text style={styles.subtitle}>{formValues.quantity && formValues.quantity}</Text>
       </Layout>
       <Layout style={styles.selectContainerRow} level="1">
         <Text style={styles.subtitle}>Tamaño:</Text>
         <Text style={styles.subtitle}>
-          {formData.size &&
-            coffeeSizeCollection.find((item) => item.id === formData.size)
-              ?.name}
+          {formValues.size && coffeeSizeCollection.find((item) => item.id === formValues.size)?.name}
         </Text>
       </Layout>
       <Layout style={styles.selectContainerRow} level="1">
         <Text style={styles.subtitle}>Tipo de café:</Text>
         <Text style={styles.subtitle}>
-          {formData.size &&
-            coffeeTypeCollection.find((item) => item.id === formData.type)
-              ?.name}
+          {formValues.type && coffeeTypeCollection.find((item) => item.id === formValues.type)?.name}
         </Text>
       </Layout>
       <Layout style={styles.selectContainerRow} level="1">
         <Text style={styles.subtitle}>Tipo de pago:</Text>
         <Text style={styles.subtitle}>
-          {" "}
-          {formData.size &&
-            paymentTypeCollection.find((item) => item.id === formData.payment)
-              ?.name}
+          {formValues.payment &&
+            paymentTypeCollection.find((item) => item.id === formValues.payment)?.name}
         </Text>
       </Layout>
       <Layout style={styles.selectContainerRow} level="1">
         <Text style={styles.subtitle}>Descuento %:</Text>
         <Text style={styles.subtitle}>
-          {formData.payment &&
+          {formValues.payment &&
             `${
-              (paymentTypeCollection.find(
-                (item) => item.id === formData.payment
-              )?.discount as number) * 100
+              (paymentTypeCollection.find((item) => item.id === formValues.payment)
+                ?.discount as number) * 100
             }%`}
         </Text>
       </Layout>
       <Layout style={styles.selectContainerRow} level="1">
         <Text style={styles.subtitle}>Total a pagar:</Text>
-        <Text style={styles.subtitle}>{formData.quantity && `$${getTotal(formData)}`}</Text>
+        <Text style={styles.subtitle}>
+          {formValues.quantity &&
+            `$${getTotal(formValues).toFixed(2)}`}
+        </Text>
       </Layout>
     </View>
   );

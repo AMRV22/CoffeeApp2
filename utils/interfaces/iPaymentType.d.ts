@@ -1,6 +1,6 @@
-interface IPaymentType{
-    id: number,
-    name: string,
+import IBaseInterface from "./IBaseInterfase";
+
+interface IPaymentType extends Omit<IBaseInterface, "price">{
     discount: number,
 }
 

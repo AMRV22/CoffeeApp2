@@ -1,6 +1,6 @@
-import ICoffeeSize from '../../utils/interfaces/ICoffeeSize';
+import IBaseInterface from '../../utils/interfaces/IBaseInterfase';
 
-const coffeeSizeCollection: readonly ICoffeeSize[] = Object.freeze([
+const coffeeSizeCollection: readonly IBaseInterface[] = Object.freeze([
     {
         id: 1,
         name: "Short (8 onz)",

@@ -13,28 +13,29 @@ import coffeeSizeCollection from "../../constants/mocks/coffeeSize.mock";
 import coffeeTypeCollection from "../../constants/mocks/coffeeType.mock";
 import paymentTypeCollection from "../../constants/mocks/payment.mock";
 import { useForm, Controller } from "react-hook-form";
-import {FormValues} from "../../utils/types/types";
+import { FormValues } from "../../utils/types/types";
 
-type Nullable<T> = T | null;
 
 
 const CoffeeScreen = () => {
   const {
-    register,
-    setValue,
     handleSubmit,
     control,
-    reset,
     formState: { errors },
   } = useForm();
 
-  const [formData, setFormData] = useState<FormValues>();
+  const [formData, setFormData] = useState<FormValues>({});
 
-  const onSubmit = (data: FormValues) => {
-    console.log(data);
-    setFormData(data);
+
+
+  const validateNumber = (value: string) => {
+    const matches: any = value.match(/^\d+$/);
+      return matches?.length > 0 || "No es un número";
   };
 
+  const onSubmit = (data: FormValues) => {
+    setFormData(data);
+  };
   return (
     <View>
       <View style={[styles.selectionContainer]}>
@@ -43,8 +44,10 @@ const CoffeeScreen = () => {
           <Controller
             control={control}
             name="size"
+            rules={{ required: true }}
             render={({ field: { onChange, value } }) => (
               <Select
+                aria-invalid={!!errors.size}
                 value={
                   coffeeSizeCollection.find(
                     (target) => target.id == Number(value)
@@ -62,13 +65,16 @@ const CoffeeScreen = () => {
               </Select>
             )}
           />
+          {errors.size && <Text style={{ color: "red" }}>Campo requerido</Text>}
         </Layout>
         <Layout style={styles.selectContainer} level="1">
           <Controller
             control={control}
             name="type"
+            rules={{ required: true }}
             render={({ field: { onChange, value } }) => (
               <Select
+                aria-invalid={!!errors.type}
                 value={
                   coffeeTypeCollection.find(
                     (target) => target.id == Number(value)
@@ -86,47 +92,60 @@ const CoffeeScreen = () => {
               </Select>
             )}
           />
+          {errors.type && <Text style={{ color: "red" }}>Campo requerido</Text>}
         </Layout>
         <Layout style={styles.selectContainerRow} level="1">
-          <Controller
-            control={control}
-            name="payment"
-            render={({ field: { onChange, value } }) => (
-              <Select
-                value={
-                  paymentTypeCollection.find(
-                    (target) => target.id == Number(value)
-                  )?.name
-                }
-                onSelect={(index) => {
-                  const parsedIndex = index as IndexPath;
-                  onChange(paymentTypeCollection[parsedIndex.row].id);
-                }}
-                style={styles.customInputSpace}
-                placeholder="Tipo de pago"
-              >
-                {paymentTypeCollection.map((item, index) => (
-                  <SelectItem key={index} title={item.name} />
-                ))}
-              </Select>
+          <Layout style={styles.customInputSpace}>
+            <Controller
+              control={control}
+              name="payment"
+              rules={{ required: true }}
+              render={({ field: { onChange, value } }) => (
+                <Select
+                  aria-invalid={!!errors.payment}
+                  value={
+                    paymentTypeCollection.find(
+                      (target) => target.id == Number(value)
+                    )?.name
+                  }
+                  onSelect={(index) => {
+                    const parsedIndex = index as IndexPath;
+                    onChange(paymentTypeCollection[parsedIndex.row].id);
+                  }}
+                  placeholder="Tipo de pago"
+                >
+                  {paymentTypeCollection.map((item, index) => (
+                    <SelectItem key={index} title={item.name} />
+                  ))}
+                </Select>
+              )}
+            />
+            {errors.payment && (
+              <Text style={{ color: "red" }}>Campo requerido</Text>
             )}
-          />
+          </Layout>
 
-          <Controller
-            control={control}
-            render={({ field: { onChange, value } }) => (
-              <Input
-                onChangeText={(value) => onChange(value)}
-                value={value}
-                style={styles.customInputSpace}
-                placeholder="0"
-              />
+          <Layout style={styles.customInputSpace}>
+            <Controller
+              control={control}
+              rules={{ required: true, validate: validateNumber }}
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  onChangeText={onChange}
+                  value={value}
+                  placeholder="0"
+                  aria-invalid={!!errors.quantity}
+                />
+              )}
+              name="quantity"
+            />
+            {errors.quantity && (
+              <Text style={{ color: "red" }}>{errors.quantity.type == "required" ? "Campo Requerido" : errors.quantity.message as string }</Text>
             )}
-            name="quantity"
-          />
+          </Layout>
         </Layout>
       </View>
-      <ResumeOrder {...formData} />
+      <ResumeOrder formValues={formData} />
       <Layout style={styles.buttonContainer} level="1">
         <Button onPress={handleSubmit(onSubmit)} status="info">
           Calcular
